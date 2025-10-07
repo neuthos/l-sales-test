@@ -1,0 +1,27 @@
+{
+  "recommendations": [
+    // Essential for this project
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+
+    // TypeScript & React
+    "styled-components.vscode-styled-components",
+
+    // Tailwind CSS
+    "bradlc.vscode-tailwindcss",
+
+    // Git
+    "eamodio.gitlens",
+
+    // Utilities
+    "christian-kohler.path-intellisense",
+    "zignd.html-css-class-completion",
+    "formulahendry.auto-rename-tag",
+    "ms-vscode.vscode-typescript-next"
+  ],
+  "unwantedRecommendations": [
+    // Conflicts with Prettier
+    "hookyqr.beautify",
+    "esbenp.beautify"
+  ]
+}

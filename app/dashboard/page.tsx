@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
-import dayjs, {Dayjs} from "dayjs";
+import { useState } from "react";
+import dayjs, { Dayjs } from "dayjs";
 import {ProtectedRoute} from "@/components/ProtectedRoute";
 import {Input} from "@/components/ui/Input";
 import {DatePicker} from "@/components/ui/DatePicker";
@@ -9,43 +9,43 @@ import {TimePicker} from "@/components/ui/TimePicker";
 
 export default function Dashboard() {
   // Form state
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [description, setDescription] = React.useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [description, setDescription] = useState("");
 
-  const [priceJPY, setPriceJPY] = React.useState<number | null>(1500000);
-  const [priceUSD, setPriceUSD] = React.useState<number | null>(99.99);
-  const [priceEUR, setPriceEUR] = React.useState<number | null>(85.5);
-  const [priceIDR, setPriceIDR] = React.useState<number | null>(150000);
+  const [priceJPY, setPriceJPY] = useState<number | null>(1500000);
+  const [priceUSD, setPriceUSD] = useState<number | null>(99.99);
+  const [priceEUR, setPriceEUR] = useState<number | null>(85.5);
+  const [priceIDR, setPriceIDR] = useState<number | null>(150000);
 
-  const [quantity, setQuantity] = React.useState<number | null>(1234);
-  const [stockQty, setStockQty] = React.useState<number | null>(5000);
+  const [quantity, setQuantity] = useState<number | null>(1234);
+  const [stockQty, setStockQty] = useState<number | null>(5000);
 
-  const [discount, setDiscount] = React.useState<number | null>(15.5);
-  const [taxRate, setTaxRate] = React.useState<number | null>(10);
+  const [discount, setDiscount] = useState<number | null>(15.5);
+  const [taxRate, setTaxRate] = useState<number | null>(10);
 
   // DatePicker states
-  const [date, setDate] = React.useState<Dayjs | null>(dayjs());
-  const [dateISO, setDateISO] = React.useState<string | null>(
+  const [date, setDate] = useState<Dayjs | null>(dayjs());
+  const [dateISO, setDateISO] = useState<string | null>(
     dayjs().toISOString()
   );
 
-  const [dateTime, setDateTime] = React.useState<Dayjs | null>(dayjs());
-  const [dateTimeISO, setDateTimeISO] = React.useState<string | null>(
+  const [dateTime, setDateTime] = useState<Dayjs | null>(dayjs());
+  const [dateTimeISO, setDateTimeISO] = useState<string | null>(
     dayjs().toISOString()
   );
 
-  const [dateRange, setDateRange] = React.useState<
+  const [dateRange, setDateRange] = useState<
     [Dayjs | null, Dayjs | null]
   >([dayjs(), dayjs().add(7, "day")]);
-  const [dateRangeISO, setDateRangeISO] = React.useState<
+  const [dateRangeISO, setDateRangeISO] = useState<
     [string | null, string | null]
   >([dayjs().toISOString(), dayjs().add(7, "day").toISOString()]);
 
-  const [time, setTime] = React.useState<Dayjs | null>(
+  const [time, setTime] = useState<Dayjs | null>(
     dayjs().hour(14).minute(30)
   );
-  const [timeISO, setTimeISO] = React.useState<string | null>(
+  const [timeISO, setTimeISO] = useState<string | null>(
     dayjs().hour(14).minute(30).toISOString()
   );
 

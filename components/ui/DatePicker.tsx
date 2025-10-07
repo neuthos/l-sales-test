@@ -1,18 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import * as React from "react";
-import {CalendarIcon, ChevronLeft, ChevronRight} from "lucide-react";
-import RCPicker from "rc-picker";
-import type {PickerRef, PickerProps} from "rc-picker";
-import {RangePicker as RCRangePicker} from "rc-picker";
-import type {RangePickerProps as RCRangePickerProps} from "rc-picker";
-import generateConfig from "rc-picker/lib/generate/dayjs";
-import type {Dayjs} from "dayjs";
-import dayjs from "dayjs";
-import enUS from "rc-picker/lib/locale/en_US";
 import "rc-picker/assets/index.css";
 import "@/styles/rc-picker-custom.css";
 
-import {cn} from "@/lib/utils";
+import { forwardRef, useMemo } from "react";
+import dayjs from "dayjs";
+import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import RCPicker from "rc-picker";
+import { RangePicker as RCRangePicker } from "rc-picker";
+import generateConfig from "rc-picker/lib/generate/dayjs";
+import enUS from "rc-picker/lib/locale/en_US";
+
+import { cn } from "@/lib/utils";
+
+import type { Dayjs } from "dayjs";
+import type { PickerProps, PickerRef } from "rc-picker";
+import type { RangePickerProps as RCRangePickerProps } from "rc-picker";
+import type { Locale } from "react-day-picker";
 
 type PickerRefType = PickerRef;
 
@@ -25,7 +27,7 @@ interface DatePickerProps
   status?: "error" | "warning";
   variant?: "outline" | "filled" | "borderless";
   size?: "sm" | "default" | "lg";
-  locale?: unknown;
+  locale?: Locale;
   value?: Dayjs | string | null;
   defaultValue?: Dayjs | string | null;
 }
@@ -39,7 +41,7 @@ interface DateRangePickerProps
   status?: "error" | "warning";
   variant?: "outline" | "filled" | "borderless";
   size?: "sm" | "default" | "lg";
-  locale?: unknown;
+  locale?: never;
   value?: [Dayjs | string | null, Dayjs | string | null] | null;
   defaultValue?: [Dayjs | string | null, Dayjs | string | null] | null;
 }
@@ -79,7 +81,7 @@ const getPickerClasses = (
   );
 };
 
-const DatePickerComponent = React.forwardRef<PickerRefType, DatePickerProps>(
+const DatePickerComponent = forwardRef<PickerRefType, DatePickerProps>(
   (
     {
       className,
@@ -96,13 +98,13 @@ const DatePickerComponent = React.forwardRef<PickerRefType, DatePickerProps>(
     },
     ref
   ) => {
-    const normalizedValue = React.useMemo(() => {
+    const normalizedValue = useMemo(() => {
       if (!value) return null;
       if (typeof value === "string") return dayjs(value);
       return value;
     }, [value]);
 
-    const normalizedDefaultValue = React.useMemo(() => {
+    const normalizedDefaultValue = useMemo(() => {
       if (!defaultValue) return undefined;
       if (typeof defaultValue === "string") return dayjs(defaultValue);
       return defaultValue;
@@ -112,13 +114,13 @@ const DatePickerComponent = React.forwardRef<PickerRefType, DatePickerProps>(
       <RCPicker<Dayjs>
         ref={ref}
         generateConfig={generateConfig}
-        locale={locale || (enUS as any)}
+        locale={locale as never}
         prefixCls={pickerPrefixCls}
         data-test={dataTest}
         disabled={disabled}
         value={normalizedValue}
         defaultValue={normalizedDefaultValue}
-        suffixIcon={suffixIcon || <CalendarIcon className="size-4" />}
+        suffixIcon={suffixIcon ?? <CalendarIcon className="size-4" />}
         prevIcon={<ChevronLeft className="size-4" />}
         nextIcon={<ChevronRight className="size-4" />}
         superPrevIcon={<ChevronLeft className="size-4" />}
@@ -135,7 +137,7 @@ const DatePickerComponent = React.forwardRef<PickerRefType, DatePickerProps>(
 );
 DatePickerComponent.displayName = "DatePicker";
 
-const DateRangePicker = React.forwardRef<PickerRefType, DateRangePickerProps>(
+const DateRangePicker = forwardRef<PickerRefType, DateRangePickerProps>(
   (
     {
       className,
@@ -153,7 +155,7 @@ const DateRangePicker = React.forwardRef<PickerRefType, DateRangePickerProps>(
     },
     ref
   ) => {
-    const normalizedValue = React.useMemo(() => {
+    const normalizedValue = useMemo(() => {
       if (!value) return null;
       return [
         value[0]
@@ -169,7 +171,7 @@ const DateRangePicker = React.forwardRef<PickerRefType, DateRangePickerProps>(
       ] as [Dayjs | null, Dayjs | null];
     }, [value]);
 
-    const normalizedDefaultValue = React.useMemo(() => {
+    const normalizedDefaultValue = useMemo(() => {
       if (!defaultValue) return undefined;
       return [
         defaultValue[0]
@@ -187,25 +189,25 @@ const DateRangePicker = React.forwardRef<PickerRefType, DateRangePickerProps>(
 
     return (
       <RCRangePicker<Dayjs>
-        ref={ref as any}
+        ref={ref as never}
         generateConfig={generateConfig}
-        locale={(locale as any) || (enUS as any)}
+        locale={(locale as never) ?? (enUS as unknown)}
         prefixCls={pickerPrefixCls}
         data-test={dataTest}
         disabled={disabled}
         value={normalizedValue}
         defaultValue={normalizedDefaultValue}
-        suffixIcon={suffixIcon || <CalendarIcon className="size-4" />}
+        suffixIcon={suffixIcon ?? <CalendarIcon className="size-4" />}
         separator={
-          separator || <span className="text-muted-foreground">-</span>
+          separator ?? <span className="text-muted-foreground">-</span>
         }
         prevIcon={<ChevronLeft className="size-4" />}
         nextIcon={<ChevronRight className="size-4" />}
         superPrevIcon={<ChevronLeft className="size-4" />}
         superNextIcon={<ChevronRight className="size-4" />}
         getPopupContainer={(triggerNode: HTMLElement) =>
-          triggerNode.closest("[data-scroll-container]") ||
-          triggerNode.parentElement ||
+          triggerNode.closest("[data-scroll-container]") ??
+          triggerNode.parentElement ??
           document.body
         }
         className={cn(
@@ -231,5 +233,9 @@ const DatePickerWithRange =
 
 DatePickerWithRange.Range = DateRangePicker;
 
-export {DatePickerWithRange as DatePicker};
-export type {DatePickerProps, DateRangePickerProps, PickerRefType as PickerRef};
+export { DatePickerWithRange as DatePicker };
+export type {
+  DatePickerProps,
+  DateRangePickerProps,
+  PickerRefType as PickerRef,
+};

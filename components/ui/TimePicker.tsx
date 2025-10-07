@@ -1,13 +1,15 @@
-import * as React from "react";
-import {ClockIcon} from "lucide-react";
-import dayjs, {Dayjs} from "dayjs";
+import { forwardRef, useEffect, useMemo, useState } from "react";
+import { ClockIcon } from "lucide-react";
+import dayjs, { Dayjs } from "dayjs";
 
-import {cn} from "@/lib/utils";
-import {Input} from "@/components/ui/Input";
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/Popover";
-import {Button} from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/Input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
+import { Button } from "@/components/ui/Button";
 
-interface TimePickerProps extends Omit<React.ComponentProps<"button">, "value" | "onChange"> {
+import type { ComponentProps } from "react";
+
+interface TimePickerProps extends Omit<ComponentProps<"button">, "value" | "onChange"> {
   "data-test": string;
   value?: Dayjs | string | null;
   onChange?: (dayjs: Dayjs | null, iso8601: string | null) => void;
@@ -15,7 +17,7 @@ interface TimePickerProps extends Omit<React.ComponentProps<"button">, "value" |
   disabled?: boolean;
 }
 
-const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(
+const TimePicker = forwardRef<HTMLButtonElement, TimePickerProps>(
   (
     {
       className,
@@ -28,11 +30,11 @@ const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(
     },
     ref
   ) => {
-    const [open, setOpen] = React.useState(false);
-    const [timeValue, setTimeValue] = React.useState({hours: "00", minutes: "00"});
+    const [open, setOpen] = useState(false);
+    const [timeValue, setTimeValue] = useState({hours: "00", minutes: "00"});
 
     // Initialize from value prop
-    React.useEffect(() => {
+    useEffect(() => {
       if (value) {
         const dayjsValue = typeof value === "string" ? dayjs(value) : value;
         if (dayjsValue.isValid()) {
@@ -58,7 +60,7 @@ const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(
       onChange?.(combined, combined.toISOString());
     };
 
-    const displayValue = React.useMemo(() => {
+    const displayValue = useMemo(() => {
       if (timeValue.hours === "00" && timeValue.minutes === "00" && !value) {
         return placeholder;
       }

@@ -1,42 +1,51 @@
-import * as React from "react";
+import { forwardRef, useEffect, useState } from "react";
 
-import {cn} from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import {
   type CurrencyCode,
   currencyConfig,
   formatCurrency,
-  formatQuantity,
   formatPercentage,
-  parseNumericValue,
+  formatQuantity,
   parseIntegerValue,
+  parseNumericValue,
 } from "@/lib/utils/number";
 
-const Input = React.forwardRef<
-  HTMLInputElement,
-  React.ComponentProps<"input"> & {"data-test": string}
->(({className, type, "data-test": dataTest, ...props}, ref) => {
-  return (
-    <input
-      type={type}
-      ref={ref}
-      data-slot="input"
-      data-test={dataTest}
-      className={cn(
-        "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-        "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-        className
-      )}
-      {...props}
-    />
-  );
-});
+import type {
+  ChangeEvent,
+  ComponentProps,
+  ForwardRefExoticComponent,
+  RefAttributes,
+} from "react";
+
+// Base Input Props
+type InputProps = ComponentProps<"input"> & { "data-test": string };
+
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type, "data-test": dataTest, ...props }, ref) => {
+    return (
+      <input
+        type={type}
+        ref={ref}
+        data-slot="input"
+        data-test={dataTest}
+        className={cn(
+          "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+          "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+          "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+          className
+        )}
+        {...props}
+      />
+    );
+  }
+);
 Input.displayName = "Input";
 
-const TextArea = React.forwardRef<
+const TextArea = forwardRef<
   HTMLTextAreaElement,
-  React.ComponentProps<"textarea"> & {"data-test": string}
->(({className, "data-test": dataTest, ...props}, ref) => {
+  ComponentProps<"textarea"> & { "data-test": string }
+>(({ className, "data-test": dataTest, ...props }, ref) => {
   return (
     <textarea
       ref={ref}
@@ -56,14 +65,14 @@ TextArea.displayName = "Input.TextArea";
 
 // Currency Input
 interface CurrencyInputProps
-  extends Omit<React.ComponentProps<"input">, "type" | "value" | "onChange"> {
+  extends Omit<ComponentProps<"input">, "type" | "value" | "onChange"> {
   "data-test": string;
   currency?: CurrencyCode;
   value?: number | string | null;
   onChange?: (value: number | null) => void;
 }
 
-const Currency = React.forwardRef<HTMLInputElement, CurrencyInputProps>(
+const Currency = forwardRef<HTMLInputElement, CurrencyInputProps>(
   (
     {
       className,
@@ -76,10 +85,10 @@ const Currency = React.forwardRef<HTMLInputElement, CurrencyInputProps>(
     ref
   ) => {
     const config = currencyConfig[currency];
-    const [displayValue, setDisplayValue] = React.useState("");
-    const [isFocused, setIsFocused] = React.useState(false);
+    const [displayValue, setDisplayValue] = useState("");
+    const [isFocused, setIsFocused] = useState(false);
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (value !== undefined && value !== null && !isFocused) {
         const numValue = typeof value === "string" ? parseFloat(value) : value;
         if (!isNaN(numValue)) {
@@ -90,7 +99,7 @@ const Currency = React.forwardRef<HTMLInputElement, CurrencyInputProps>(
       }
     }, [value, isFocused, currency]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
       const inputValue = e.target.value;
       setDisplayValue(inputValue);
 
@@ -150,7 +159,7 @@ Currency.displayName = "Input.Currency";
 
 // Quantity Input
 interface QuantityInputProps
-  extends Omit<React.ComponentProps<"input">, "type" | "value" | "onChange"> {
+  extends Omit<ComponentProps<"input">, "type" | "value" | "onChange"> {
   "data-test": string;
   value?: number | string | null;
   onChange?: (value: number | null) => void;
@@ -158,14 +167,22 @@ interface QuantityInputProps
   max?: number;
 }
 
-const Quantity = React.forwardRef<HTMLInputElement, QuantityInputProps>(
+const Quantity = forwardRef<HTMLInputElement, QuantityInputProps>(
   (
-    {className, "data-test": dataTest, value, onChange, min = 0, max, ...props},
+    {
+      className,
+      "data-test": dataTest,
+      value,
+      onChange,
+      min = 0,
+      max,
+      ...props
+    },
     ref
   ) => {
-    const [displayValue, setDisplayValue] = React.useState("");
+    const [displayValue, setDisplayValue] = useState("");
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (value !== undefined && value !== null) {
         const numValue =
           typeof value === "string" ? parseInt(value, 10) : value;
@@ -179,7 +196,7 @@ const Quantity = React.forwardRef<HTMLInputElement, QuantityInputProps>(
       }
     }, [value]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
       const inputValue = e.target.value;
       const parsedValue = parseIntegerValue(inputValue);
 
@@ -224,7 +241,7 @@ Quantity.displayName = "Input.Quantity";
 
 // Percentage Input
 interface PercentageInputProps
-  extends Omit<React.ComponentProps<"input">, "type" | "value" | "onChange"> {
+  extends Omit<ComponentProps<"input">, "type" | "value" | "onChange"> {
   "data-test": string;
   value?: number | string | null;
   onChange?: (value: number | null) => void;
@@ -233,7 +250,7 @@ interface PercentageInputProps
   decimals?: number;
 }
 
-const Percentage = React.forwardRef<HTMLInputElement, PercentageInputProps>(
+const Percentage = forwardRef<HTMLInputElement, PercentageInputProps>(
   (
     {
       className,
@@ -247,10 +264,10 @@ const Percentage = React.forwardRef<HTMLInputElement, PercentageInputProps>(
     },
     ref
   ) => {
-    const [displayValue, setDisplayValue] = React.useState("");
-    const [isFocused, setIsFocused] = React.useState(false);
+    const [displayValue, setDisplayValue] = useState("");
+    const [isFocused, setIsFocused] = useState(false);
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (value !== undefined && value !== null && !isFocused) {
         const numValue = typeof value === "string" ? parseFloat(value) : value;
         if (!isNaN(numValue)) {
@@ -261,7 +278,7 @@ const Percentage = React.forwardRef<HTMLInputElement, PercentageInputProps>(
       }
     }, [value, isFocused, decimals]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
       const inputValue = e.target.value;
       setDisplayValue(inputValue);
 
@@ -331,17 +348,29 @@ const Percentage = React.forwardRef<HTMLInputElement, PercentageInputProps>(
 );
 Percentage.displayName = "Input.Percentage";
 
-const InputComponent = Input as typeof Input & {
+// Compound component type definition
+interface InputCompoundComponent
+  extends ForwardRefExoticComponent<
+    Omit<InputProps, "ref"> & RefAttributes<HTMLInputElement>
+  > {
   TextArea: typeof TextArea;
   Currency: typeof Currency;
   Quantity: typeof Quantity;
   Percentage: typeof Percentage;
-};
+}
+
+// Create compound component with proper typing
+const InputComponent = Input as InputCompoundComponent;
 
 InputComponent.TextArea = TextArea;
 InputComponent.Currency = Currency;
 InputComponent.Quantity = Quantity;
 InputComponent.Percentage = Percentage;
 
-export {InputComponent as Input};
-export type {CurrencyInputProps, QuantityInputProps, PercentageInputProps};
+export { InputComponent as Input };
+export type {
+  CurrencyInputProps,
+  InputProps,
+  PercentageInputProps,
+  QuantityInputProps,
+};

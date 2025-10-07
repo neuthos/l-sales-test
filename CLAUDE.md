@@ -22,6 +22,134 @@ npm start
 npm run lint
 ```
 
+## Editor Setup (VSCode)
+
+This project is configured for **auto-fix on save** in VSCode. All formatting and linting happens automatically when you save a file.
+
+### Required Extensions
+
+Install these VSCode extensions (VSCode will prompt you automatically):
+- **Prettier** (`esbenp.prettier-vscode`) - Code formatter
+- **ESLint** (`dbaeumer.vscode-eslint`) - Linter
+
+### What Happens on Save
+
+When you save a file (Cmd/Ctrl + S):
+
+1. **Prettier formats the code:**
+   - Fixes indentation, line breaks, quotes
+   - Adds/removes semicolons
+   - Formats JSX/TSX properly
+   - Wraps long lines
+
+2. **ESLint auto-fixes issues:**
+   - Converts regular imports to type imports
+   - Changes `||` to `??` (nullish coalescing)
+   - Removes unused variables
+   - Organizes imports (if configured)
+
+3. **Only unfixable errors remain:**
+   - `any` types (must manually specify type)
+   - Missing return types (must add manually)
+   - Floating promises (must add `await`)
+   - Logic errors
+
+### Import Ordering (Auto-Fixed)
+
+Imports are automatically organized into **3 sections** with blank lines between:
+
+```typescript
+// 1. External libraries (React destructured, then others)
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import dayjs from "dayjs";
+
+// 2. Internal files (@/ imports)
+import { Button } from "@/components/ui/Button";
+import { api } from "@/lib/api/client";
+import { cn } from "@/lib/utils";
+
+// 3. Type imports
+import type { User } from "@/lib/types/user";
+import type { ApiResponse } from "@/lib/types/api";
+```
+
+**Rules:**
+- ❌ **Never** use `import * as React from "react"`
+- ❌ **Never** use `import React from "react"`
+- ✅ **Always** destructure what you need: `import { useState, useEffect } from "react"`
+- ✅ External libraries sorted alphabetically
+- ✅ Internal imports sorted alphabetically
+- ✅ Type imports separated and sorted
+- ✅ Blank line between each section (auto-added)
+
+### Auto-Fixable Issues ✅
+
+These are **automatically fixed on save**:
+
+```typescript
+// BEFORE SAVE:
+import {User} from "@/lib/types/user";  // Missing 'type'
+const data=response?.data||fallback;     // Wrong operator, spacing
+let unusedVar = 5;                       // Unused variable
+function test(  ) {return 1}            // Bad formatting
+
+// AFTER SAVE:
+import type {User} from "@/lib/types/user";
+const data = response?.data ?? fallback;
+// unusedVar removed automatically
+function test() {
+  return 1;
+}
+```
+
+### Manual Fix Required ❌
+
+These **cannot be auto-fixed** and need your attention:
+
+```typescript
+// ❌ Must manually change 'any' to proper type
+const data: any = fetchData();
+
+// ❌ Must manually add return type or add comment
+function getData() {
+  return user;
+}
+
+// ❌ Must manually add 'await' or handle promise
+someAsyncFunction();
+```
+
+### Configuration Files
+
+- **`.vscode/settings.json`** - VSCode workspace settings (auto-fix on save)
+- **`.prettierrc.js`** - Prettier formatting rules
+- **`eslint.config.mjs`** - ESLint + TypeScript rules
+- **`.vscode/extensions.json`** - Recommended extensions
+
+### Manual Formatting
+
+If auto-save is disabled:
+
+```bash
+# Format all files with Prettier
+npx prettier --write .
+
+# Fix all auto-fixable ESLint issues
+npm run lint -- --fix
+```
+
+### Disabling Auto-Fix (Not Recommended)
+
+If you need to disable auto-fix temporarily:
+
+1. Open Command Palette (Cmd/Ctrl + Shift + P)
+2. Type "Preferences: Open Workspace Settings (JSON)"
+3. Change `"editor.formatOnSave": false`
+
+**Note:** Pre-commit hook will still enforce linting rules before commit.
+
 ## Git Commit Guidelines
 
 This project uses **Husky** and **Commitlint** to enforce consistent commit message format.
@@ -101,6 +229,134 @@ git commit --no-verify -m "your message"
 ```bash
 echo "feat(api): add new endpoint" | npx commitlint
 ```
+
+## Linting Guidelines
+
+This project enforces **strict TypeScript linting** to catch bugs before runtime.
+
+### Rules Enforcement
+
+The ESLint configuration includes strict type-safety rules:
+
+**ERROR-level rules:**
+- ❌ No explicit `any` type in your own code
+- ❌ No unsafe operations with `any` typed values
+- ❌ No unused variables (prefix with `_` to allow: `_unusedVar`)
+- ❌ No floating promises (must await or handle)
+- ❌ No `console.log` in production (use `console.warn` or `console.error`)
+- ❌ Must use `type` imports for type-only imports
+- ❌ Prefer nullish coalescing (`??`) over `||` when appropriate
+- ❌ Prefer optional chaining (`?.`) over manual checks
+
+**WARN-level rules:**
+- ⚠️ Functions should have explicit return types (recommended but not required)
+- ⚠️ Prefer `const` over `let` when not reassigned
+
+### Handling `any` Types
+
+**❌ BAD - Will cause linting error:**
+```typescript
+const data: any = fetchData();
+function process(input: any) { ... }
+```
+
+**✅ GOOD - Use specific types:**
+```typescript
+const data: User = fetchData();
+function process(input: User | Product) { ... }
+```
+
+**✅ GOOD - Use `unknown` when type is truly unknown:**
+```typescript
+const data: unknown = fetchData();
+// Then narrow the type
+if (isUser(data)) {
+  // data is User here
+}
+```
+
+**✅ GOOD - Type assertion for third-party untyped libraries:**
+```typescript
+import thirdPartyLib from "untyped-library";
+
+// Cast to proper type
+const result = thirdPartyLib.getData() as MyExpectedType;
+```
+
+**✅ ALLOWED - With explicit comment for third-party interfaces:**
+```typescript
+interface AxiosAdapter {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- matches axios response type
+  transformResponse(data: any): unknown;
+}
+```
+
+### Type Imports
+
+Always use `type` keyword for type-only imports:
+
+```typescript
+// ❌ BAD
+import {User} from "@/lib/types/user";
+
+// ✅ GOOD
+import type {User} from "@/lib/types/user";
+
+// ✅ GOOD - Mixed import
+import {createUser, type User} from "@/lib/services/user";
+```
+
+### Unused Variables
+
+Prefix with `_` to indicate intentionally unused:
+
+```typescript
+// ❌ BAD - error: 'error' is defined but never used
+function getData() {
+  try {
+    return fetchData();
+  } catch (error) {
+    return null;
+  }
+}
+
+// ✅ GOOD
+function getData() {
+  try {
+    return fetchData();
+  } catch (_error) {
+    return null;
+  }
+}
+```
+
+### Running Linter
+
+```bash
+# Check for linting errors
+npm run lint
+
+# The pre-commit hook runs linting automatically
+git commit -m "feat: add new feature"  # Will run lint before commit
+```
+
+### Bypassing Linter
+
+Only for emergencies:
+
+```bash
+# Skip pre-commit hook (includes linting)
+git commit --no-verify -m "feat: emergency fix"
+
+# To temporarily disable a rule (use sparingly)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- reason for exception
+```
+
+### Special File Rules
+
+- **Config files** (`*.config.js`, `*.config.ts`): Can use `require()` and `console`
+- **Type definitions** (`*.d.ts`): Can use `any` when necessary
+- **Third-party code** (`node_modules/`): Automatically ignored
 
 ## Architecture
 
