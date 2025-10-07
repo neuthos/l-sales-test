@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 import {CalendarIcon, ChevronLeft, ChevronRight} from "lucide-react";
 import RCPicker from "rc-picker";
@@ -24,7 +25,7 @@ interface DatePickerProps
   status?: "error" | "warning";
   variant?: "outline" | "filled" | "borderless";
   size?: "sm" | "default" | "lg";
-  locale?: any;
+  locale?: unknown;
   value?: Dayjs | string | null;
   defaultValue?: Dayjs | string | null;
 }
@@ -111,7 +112,7 @@ const DatePickerComponent = React.forwardRef<PickerRefType, DatePickerProps>(
       <RCPicker<Dayjs>
         ref={ref}
         generateConfig={generateConfig}
-        locale={locale || enUS}
+        locale={locale || (enUS as any)}
         prefixCls={pickerPrefixCls}
         data-test={dataTest}
         disabled={disabled}
@@ -186,9 +187,9 @@ const DateRangePicker = React.forwardRef<PickerRefType, DateRangePickerProps>(
 
     return (
       <RCRangePicker<Dayjs>
-        ref={ref}
+        ref={ref as any}
         generateConfig={generateConfig}
-        locale={locale || enUS}
+        locale={(locale as any) || (enUS as any)}
         prefixCls={pickerPrefixCls}
         data-test={dataTest}
         disabled={disabled}

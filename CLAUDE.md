@@ -22,6 +22,86 @@ npm start
 npm run lint
 ```
 
+## Git Commit Guidelines
+
+This project uses **Husky** and **Commitlint** to enforce consistent commit message format.
+
+### Setup
+
+Husky is automatically initialized when you run:
+- `npm install` - The `prepare` script runs `husky` setup
+- `npm run dev` - Runs `husky install` before starting dev server
+
+### Commit Message Format
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+**Required:**
+- **type**: One of: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`
+- **subject**: Short description (max 50 chars), lowercase, imperative mood, no period
+
+**Optional:**
+- **scope**: Component, service, or area affected (e.g., `auth`, `api`, `ui`)
+- **body**: Detailed description (wrap at 72 chars)
+- **footer**: Issue references or breaking changes
+
+### Valid Examples
+
+**Simple commit:**
+```bash
+git commit -m "feat(auth): add login functionality"
+git commit -m "fix(api): resolve null pointer in user service"
+git commit -m "docs: update installation guide"
+```
+
+**Commit with body and footer:**
+```bash
+git commit -m "feat(dashboard): add revenue chart widget
+
+Add interactive revenue chart with filtering capabilities.
+Supports daily, weekly, and monthly views.
+
+Closes #456"
+```
+
+### Common Commit Types
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, whitespace)
+- `refactor`: Code refactoring (no functional changes)
+- `perf`: Performance improvements
+- `test`: Adding or updating tests
+- `chore`: Build process, dependencies, tooling
+
+### Troubleshooting
+
+**If your commit is rejected:**
+1. Check the error message - it will show what's wrong
+2. Common issues:
+   - Subject too long (max 50 chars)
+   - Invalid type (must be one of the allowed types)
+   - Subject starts with uppercase (must be lowercase)
+   - Subject ends with period (not allowed)
+   - Missing type or subject
+
+**Emergency bypass** (use sparingly):
+```bash
+git commit --no-verify -m "your message"
+```
+
+**Test your commit message format:**
+```bash
+echo "feat(api): add new endpoint" | npx commitlint
+```
+
 ## Architecture
 
 ### Multi-Tenant System
