@@ -73,7 +73,7 @@ const eslintConfig = [
               name: "react",
               importNames: ["default"],
               message:
-                'Use destructured imports like "import { useState, useEffect } from \'react\'" instead of "import React from \'react\'"',
+                "Use destructured imports like \"import { useState, useEffect } from 'react'\" instead of \"import React from 'react'\"",
             },
           ],
           patterns: [
@@ -81,7 +81,7 @@ const eslintConfig = [
               group: ["react"],
               importNames: ["*"],
               message:
-                'Use destructured imports like "import { useState, useEffect } from \'react\'" instead of "import * as React from \'react\'"',
+                "Use destructured imports like \"import { useState, useEffect } from 'react'\" instead of \"import * as React from 'react'\"",
             },
           ],
         },

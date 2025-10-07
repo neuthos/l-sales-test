@@ -1,7 +1,7 @@
 "use client";
 
-import {usePathname} from "next/navigation";
-import {useMemo, useEffect, useState} from "react";
+import { useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export interface TenantConfig {
   tenantId: string;
@@ -19,7 +19,7 @@ export function useTenant(): TenantConfig {
 
   const tenant = useMemo(() => {
     // Always return default for SSR and initial client render
-    if (!mounted || typeof window === "undefined") {
+    if (!mounted ?? typeof window === "undefined") {
       return {
         tenantId: "default",
         environment: "development",
@@ -31,14 +31,14 @@ export function useTenant(): TenantConfig {
     const subdomain = hostname.split(".")[0];
 
     // Detect environment from hostname or ENV variable
-    let environment = process.env.NEXT_PUBLIC_ENVIRONMENT || "development";
+    let environment = process.env.NEXT_PUBLIC_ENVIRONMENT ?? "development";
 
     // You can customize this logic based on your needs
-    if (hostname.includes("localhost") || hostname.includes("127.0.0.1")) {
+    if (hostname.includes("localhost") ?? hostname.includes("127.0.0.1")) {
       environment = "development";
     } else if (hostname.includes("staging")) {
       environment = "staging";
-    } else if (hostname.includes("prod") || !hostname.includes("dev")) {
+    } else if (hostname.includes("prod") ?? !hostname.includes("dev")) {
       environment = "production";
     }
 

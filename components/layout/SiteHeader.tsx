@@ -1,16 +1,17 @@
 "use client";
 
-import {Separator} from "@/components/ui/Separator";
-import {SidebarTrigger} from "@/components/ui/Sidebar";
-import {LanguageSwitcher} from "@/components/layout/LanguageSwitcher";
-import {Button} from "@/components/ui/Button";
-import {LogIn, LogOut} from "lucide-react";
-import {useTranslation} from "@/lib/contexts/TranslationContext";
-import {useAuth} from "@/lib/contexts/AuthContext";
+import { LogIn, LogOut } from "lucide-react";
+
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { Button } from "@/components/ui/Button";
+import { Separator } from "@/components/ui/Separator";
+import { SidebarTrigger } from "@/components/ui/Sidebar";
+import { useAuth } from "@/lib/contexts/AuthContext";
+import { useTranslation } from "@/lib/contexts/TranslationContext";
 
 export function SiteHeader() {
-  const {isAuthenticated, login, logout} = useAuth();
-  const {t} = useTranslation();
+  const { isAuthenticated, login, logout } = useAuth();
+  const { t } = useTranslation();
 
   const handleLogin = () => {
     const success = login();

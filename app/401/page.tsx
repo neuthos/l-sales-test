@@ -1,16 +1,17 @@
 "use client";
 
-import {useEffect} from "react";
-import {useRouter} from "next/navigation";
+import { useEffect } from "react";
 import Link from "next/link";
-import {useTranslation} from "@/lib/contexts/TranslationContext";
-import {useAuth} from "@/lib/contexts/AuthContext";
-import {Button} from "@/components/ui/Button";
-import {ShieldAlert} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ShieldAlert } from "lucide-react";
+
+import { Button } from "@/components/ui/Button";
+import { useAuth } from "@/lib/contexts/AuthContext";
+import { useTranslation } from "@/lib/contexts/TranslationContext";
 
 export default function UnauthorizedPage() {
-  const {t} = useTranslation();
-  const {isAuthenticated, login} = useAuth();
+  const { t } = useTranslation();
+  const { isAuthenticated, login } = useAuth();
   const router = useRouter();
 
   // Redirect to dashboard if already authenticated

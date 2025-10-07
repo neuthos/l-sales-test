@@ -18,8 +18,11 @@ npm run build
 # Start production server
 npm start
 
-# Run linter
-npm run lint
+# Linting & Formatting
+npm run lint              # Check for lint errors
+npm run lint:fix          # Auto-fix all fixable lint errors + format code
+npm run format            # Format code with Prettier
+npm run format:check      # Check if code is formatted correctly
 ```
 
 ## Editor Setup (VSCode)
@@ -335,6 +338,12 @@ function getData() {
 ```bash
 # Check for linting errors
 npm run lint
+
+# Auto-fix all fixable errors + format code
+npm run lint:fix
+
+# Format code only (without linting)
+npm run format
 
 # The pre-commit hook runs linting automatically
 git commit -m "feat: add new feature"  # Will run lint before commit

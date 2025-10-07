@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import {useTranslation} from "@/lib/contexts/TranslationContext";
-import {Button} from "@/components/ui/Button";
-import {FileQuestion} from "lucide-react";
+import { FileQuestion } from "lucide-react";
+
+import { Button } from "@/components/ui/Button";
+import { useTranslation } from "@/lib/contexts/TranslationContext";
 
 export default function NotFound() {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">

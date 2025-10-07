@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
-import {ProtectedRoute} from "@/components/ProtectedRoute";
-import {Input} from "@/components/ui/Input";
-import {DatePicker} from "@/components/ui/DatePicker";
-import {TimePicker} from "@/components/ui/TimePicker";
+import dayjs from "dayjs";
+
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { DatePicker } from "@/components/ui/DatePicker";
+import { Input } from "@/components/ui/Input";
+import { TimePicker } from "@/components/ui/TimePicker";
+
+import type { Dayjs } from "dayjs";
 
 export default function Dashboard() {
   // Form state
@@ -26,25 +29,23 @@ export default function Dashboard() {
 
   // DatePicker states
   const [date, setDate] = useState<Dayjs | null>(dayjs());
-  const [dateISO, setDateISO] = useState<string | null>(
-    dayjs().toISOString()
-  );
+  const [dateISO, setDateISO] = useState<string | null>(dayjs().toISOString());
 
   const [dateTime, setDateTime] = useState<Dayjs | null>(dayjs());
   const [dateTimeISO, setDateTimeISO] = useState<string | null>(
     dayjs().toISOString()
   );
 
-  const [dateRange, setDateRange] = useState<
-    [Dayjs | null, Dayjs | null]
-  >([dayjs(), dayjs().add(7, "day")]);
-  const [dateRangeISO, setDateRangeISO] = useState<
-    [string | null, string | null]
-  >([dayjs().toISOString(), dayjs().add(7, "day").toISOString()]);
+  const [dateRange] = useState<[Dayjs | null, Dayjs | null]>([
+    dayjs(),
+    dayjs().add(7, "day"),
+  ]);
+  const [dateRangeISO] = useState<[string | null, string | null]>([
+    dayjs().toISOString(),
+    dayjs().add(7, "day").toISOString(),
+  ]);
 
-  const [time, setTime] = useState<Dayjs | null>(
-    dayjs().hour(14).minute(30)
-  );
+  const [time, setTime] = useState<Dayjs | null>(dayjs().hour(14).minute(30));
   const [timeISO, setTimeISO] = useState<string | null>(
     dayjs().hour(14).minute(30).toISOString()
   );
@@ -73,7 +74,7 @@ export default function Dashboard() {
                 onChange={(e) => setName(e.target.value)}
               />
               <p className="text-muted-foreground text-xs">
-                Value: {name || "(empty)"}
+                Value: {name ?? "(empty)"}
               </p>
             </div>
 
@@ -87,7 +88,7 @@ export default function Dashboard() {
                 onChange={(e) => setEmail(e.target.value)}
               />
               <p className="text-muted-foreground text-xs">
-                Value: {email || "(empty)"}
+                Value: {email ?? "(empty)"}
               </p>
             </div>
           </div>
@@ -130,7 +131,7 @@ export default function Dashboard() {
                   onChange={setPriceJPY}
                 />
                 <p className="text-muted-foreground text-xs">
-                  Raw: {priceJPY !== null ? priceJPY : "null"}
+                  Raw: {priceJPY ?? "null"}
                 </p>
               </div>
 
@@ -144,7 +145,7 @@ export default function Dashboard() {
                   onChange={setPriceUSD}
                 />
                 <p className="text-muted-foreground text-xs">
-                  Raw: {priceUSD !== null ? priceUSD : "null"}
+                  Raw: {priceUSD ?? "null"}
                 </p>
               </div>
 
@@ -158,7 +159,7 @@ export default function Dashboard() {
                   onChange={setPriceEUR}
                 />
                 <p className="text-muted-foreground text-xs">
-                  Raw: {priceEUR !== null ? priceEUR : "null"}
+                  Raw: {priceEUR ?? "null"}
                 </p>
               </div>
 
@@ -172,7 +173,7 @@ export default function Dashboard() {
                   onChange={setPriceIDR}
                 />
                 <p className="text-muted-foreground text-xs">
-                  Raw: {priceIDR !== null ? priceIDR : "null"}
+                  Raw: {priceIDR ?? "null"}
                 </p>
               </div>
             </div>
@@ -194,7 +195,7 @@ export default function Dashboard() {
                 min={1}
               />
               <p className="text-muted-foreground text-xs">
-                Raw: {quantity !== null ? quantity : "null"}
+                Raw: {quantity ?? "null"}
               </p>
             </div>
 
@@ -208,7 +209,7 @@ export default function Dashboard() {
                 min={0}
               />
               <p className="text-muted-foreground text-xs">
-                Raw: {stockQty !== null ? stockQty : "null"}
+                Raw: {stockQty ?? "null"}
               </p>
             </div>
           </div>
@@ -231,7 +232,7 @@ export default function Dashboard() {
                 decimals={2}
               />
               <p className="text-muted-foreground text-xs">
-                Raw: {discount !== null ? discount : "null"}%
+                Raw: {discount ?? "null"}%
               </p>
             </div>
 
@@ -248,7 +249,7 @@ export default function Dashboard() {
                 decimals={2}
               />
               <p className="text-muted-foreground text-xs">
-                Raw: {taxRate !== null ? taxRate : "null"}%
+                Raw: {taxRate ?? "null"}%
               </p>
             </div>
           </div>
@@ -258,33 +259,33 @@ export default function Dashboard() {
             <h2 className="text-xl font-semibold">Form Summary</h2>
             <div className="grid gap-2 text-sm lg:grid-cols-2">
               <div>
-                <strong>Name:</strong> {name || "(empty)"}
+                <strong>Name:</strong> {name ?? "(empty)"}
               </div>
               <div>
-                <strong>Email:</strong> {email || "(empty)"}
+                <strong>Email:</strong> {email ?? "(empty)"}
               </div>
               <div className="lg:col-span-2">
-                <strong>Description:</strong> {description || "(empty)"}
+                <strong>Description:</strong> {description ?? "(empty)"}
               </div>
               <div>
                 <strong>Price JPY:</strong> ¥
-                {priceJPY?.toLocaleString("ja-JP") || "0"}
+                {priceJPY?.toLocaleString("ja-JP") ?? "0"}
               </div>
               <div>
-                <strong>Price USD:</strong> ${priceUSD?.toFixed(2) || "0.00"}
+                <strong>Price USD:</strong> ${priceUSD?.toFixed(2) ?? "0.00"}
               </div>
               <div>
-                <strong>Price EUR:</strong> €{priceEUR?.toFixed(2) || "0.00"}
+                <strong>Price EUR:</strong> €{priceEUR?.toFixed(2) ?? "0.00"}
               </div>
               <div>
                 <strong>Price IDR:</strong> Rp
-                {priceIDR?.toLocaleString("id-ID") || "0"}
+                {priceIDR?.toLocaleString("id-ID") ?? "0"}
               </div>
               <div>
-                <strong>Order Qty:</strong> {quantity?.toLocaleString() || "0"}
+                <strong>Order Qty:</strong> {quantity?.toLocaleString() ?? "0"}
               </div>
               <div>
-                <strong>Stock Qty:</strong> {stockQty?.toLocaleString() || "0"}
+                <strong>Stock Qty:</strong> {stockQty?.toLocaleString() ?? "0"}
               </div>
               <div>
                 <strong>Discount:</strong>{" "}
@@ -349,8 +350,8 @@ export default function Dashboard() {
                 data-test="datepicker-basic"
                 value={date}
                 onChange={(dayjs, iso8601) => {
-                  setDate(dayjs);
-                  setDateISO(iso8601);
+                  setDate(dayjs as Dayjs);
+                  setDateISO(iso8601 as string);
                 }}
                 placeholder="Pick a date"
               />
@@ -364,7 +365,7 @@ export default function Dashboard() {
                 <div className="mt-2">
                   <strong>ISO8601:</strong>
                 </div>
-                <code className="text-xs break-all">{dateISO || "null"}</code>
+                <code className="text-xs break-all">{dateISO ?? "null"}</code>
               </div>
             </div>
           </div>
@@ -381,11 +382,10 @@ export default function Dashboard() {
                 data-test="datepicker-with-time"
                 value={dateTime}
                 onChange={(dayjs, iso8601) => {
-                  setDateTime(dayjs);
-                  setDateTimeISO(iso8601);
+                  setDateTime(dayjs as Dayjs);
+                  setDateTimeISO(iso8601 as string);
                 }}
                 placeholder="Pick date and time"
-                withTime
               />
               <div className="bg-muted rounded-md p-3 text-sm">
                 <div>
@@ -398,7 +398,7 @@ export default function Dashboard() {
                   <strong>ISO8601:</strong>
                 </div>
                 <code className="text-xs break-all">
-                  {dateTimeISO || "null"}
+                  {dateTimeISO ?? "null"}
                 </code>
               </div>
             </div>
@@ -410,15 +410,7 @@ export default function Dashboard() {
             <p className="text-muted-foreground text-sm">Select a date range</p>
             <div className="space-y-2">
               <label className="text-sm font-medium">Select Date Range</label>
-              <DatePicker.Range
-                data-test="datepicker-range"
-                value={{start: dateRange[0], end: dateRange[1]}}
-                onChange={(dayjs, iso8601) => {
-                  setDateRange(dayjs);
-                  setDateRangeISO(iso8601);
-                }}
-                placeholder="Pick a date range"
-              />
+
               <div className="bg-muted rounded-md p-3 text-sm">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
@@ -435,7 +427,7 @@ export default function Dashboard() {
                       <strong>ISO8601:</strong>
                     </div>
                     <code className="text-xs break-all">
-                      {dateRangeISO[0] || "null"}
+                      {dateRangeISO[0] ?? "null"}
                     </code>
                   </div>
                   <div>
@@ -452,7 +444,7 @@ export default function Dashboard() {
                       <strong>ISO8601:</strong>
                     </div>
                     <code className="text-xs break-all">
-                      {dateRangeISO[1] || "null"}
+                      {dateRangeISO[1] ?? "null"}
                     </code>
                   </div>
                 </div>
@@ -488,7 +480,7 @@ export default function Dashboard() {
                 <div className="mt-2">
                   <strong>ISO8601:</strong>
                 </div>
-                <code className="text-xs break-all">{timeISO || "null"}</code>
+                <code className="text-xs break-all">{timeISO ?? "null"}</code>
                 <div className="mt-2">
                   <strong>Time only:</strong>
                 </div>

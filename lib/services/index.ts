@@ -10,26 +10,24 @@
  * const products = await ProductService.getProducts();
  */
 
-export {AuthService} from "./auth.service";
-export {UserService} from "./user.service";
-export {ProductService} from "./product.service";
+export { AuthService } from "./auth.service";
+export { ProductService } from "./product.service";
+export { UserService } from "./user.service";
 
 // Export types
 export type {
+  User as AuthUser,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
-  User as AuthUser,
 } from "./auth.service";
-
 export type {
-  User,
-  UpdateUserRequest,
-  ChangePasswordRequest,
-} from "./user.service";
-
-export type {
-  Product,
   CreateProductRequest,
+  Product,
   UpdateProductRequest,
 } from "./product.service";
+export type {
+  ChangePasswordRequest,
+  UpdateUserRequest,
+  User,
+} from "./user.service";

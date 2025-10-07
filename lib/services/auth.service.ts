@@ -1,4 +1,4 @@
-import {BaseService} from "./base.service";
+import { BaseService } from "./base.service";
 
 /**
  * Auth Service Types
@@ -69,28 +69,28 @@ class AuthServiceClass extends BaseService {
    * Refresh access token
    */
   async refreshToken(refreshToken: string): Promise<LoginResponse> {
-    return this.post<LoginResponse>("/auth/refresh", {refreshToken});
+    return this.post<LoginResponse>("/auth/refresh", { refreshToken });
   }
 
   /**
    * Request password reset
    */
   async forgotPassword(email: string): Promise<void> {
-    return this.post<void>("/auth/forgot-password", {email});
+    return this.post<void>("/auth/forgot-password", { email });
   }
 
   /**
    * Reset password with token
    */
   async resetPassword(token: string, newPassword: string): Promise<void> {
-    return this.post<void>("/auth/reset-password", {token, newPassword});
+    return this.post<void>("/auth/reset-password", { token, newPassword });
   }
 
   /**
    * Verify email with token
    */
   async verifyEmail(token: string): Promise<void> {
-    return this.post<void>("/auth/verify-email", {token});
+    return this.post<void>("/auth/verify-email", { token });
   }
 }
 

@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import {useTranslation} from "@/lib/contexts/TranslationContext";
-import {Button} from "@/components/ui/Button";
-import {ShieldX} from "lucide-react";
+import { ShieldX } from "lucide-react";
+
+import { Button } from "@/components/ui/Button";
+import { useTranslation } from "@/lib/contexts/TranslationContext";
 
 export default function ForbiddenPage() {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">

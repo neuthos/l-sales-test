@@ -1,15 +1,16 @@
 "use client";
 
-import {useEffect} from "react";
-import {usePathname, useRouter} from "next/navigation";
-import {useAuth} from "@/lib/contexts/AuthContext";
+import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+
+import { useAuth } from "@/lib/contexts/AuthContext";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
-export function ProtectedRoute({children}: ProtectedRouteProps) {
-  const {isAuthenticated, checkPermission} = useAuth();
+export function ProtectedRoute({ children }: ProtectedRouteProps) {
+  const { isAuthenticated, checkPermission } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
 

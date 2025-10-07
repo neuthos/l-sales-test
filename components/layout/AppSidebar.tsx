@@ -1,5 +1,14 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ChevronRight, LayoutDashboard } from "lucide-react";
+
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/Collapsible";
 import {
   Sidebar,
   SidebarContent,
@@ -14,29 +23,22 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/Sidebar";
-import {ChevronRight, LayoutDashboard} from "lucide-react";
-import Link from "next/link";
-import {usePathname} from "next/navigation";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/Collapsible";
-import {useTranslation} from "@/lib/contexts/TranslationContext";
-import {useAuth} from "@/lib/contexts/AuthContext";
-import {menuConfig} from "@/lib/config/MenuConfig";
-import {useTenant} from "@/hooks/useTenant";
-import {MenuItem} from "@/lib/types/menu";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/Tooltip";
-import {TranslationKey} from "@/lib/translations";
+import { useTenant } from "@/hooks/useTenant";
+import { menuConfig } from "@/lib/config/MenuConfig";
+import { useAuth } from "@/lib/contexts/AuthContext";
+import { useTranslation } from "@/lib/contexts/TranslationContext";
+
+import type { TranslationKey } from "@/lib/translations";
+import type { MenuItem } from "@/lib/types/menu";
 
 function shouldShowMenuItem(item: MenuItem, environment: string): boolean {
-  if (!item.environments || item.environments === "all") {
+  if (!item.environments ?? item.environments === "all") {
     return true;
   }
 
@@ -169,7 +171,7 @@ function renderMenuItem(
                                             asChild
                                             isActive={isSubChildActive}
                                           >
-                                            <Link href={subChild.href || "#"}>
+                                            <Link href={subChild.href ?? "#"}>
                                               <span className="truncate">
                                                 {t(subChild.title)}
                                               </span>
@@ -204,7 +206,7 @@ function renderMenuItem(
                             asChild
                             isActive={isChildActive}
                           >
-                            <Link href={child.href || "#"}>
+                            <Link href={child.href ?? "#"}>
                               <span className="truncate">{t(child.title)}</span>
                               {child.badge && (
                                 <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-yellow-500 px-1.5 pb-1 pt-0.5 text-xs font-semibold text-gray-900">
@@ -231,7 +233,7 @@ function renderMenuItem(
   return (
     <SidebarMenuItem key={item.title}>
       <SidebarMenuButton asChild tooltip={t(item.title)} isActive={isActive}>
-        <Link href={item.href || "#"}>
+        <Link href={item.href ?? "#"}>
           {Icon && <Icon />}
           <span className="truncate">{t(item.title)}</span>
           {item.badge && (
@@ -245,10 +247,10 @@ function renderMenuItem(
   );
 }
 
-export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
-  const {t} = useTranslation();
-  const {environment} = useTenant();
-  const {checkPermission} = useAuth();
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { t } = useTranslation();
+  const { environment } = useTenant();
+  const { checkPermission } = useAuth();
   const pathname = usePathname();
 
   return (

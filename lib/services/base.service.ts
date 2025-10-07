@@ -1,5 +1,6 @@
-import {api} from "@/lib/api/client";
-import {AxiosRequestConfig} from "axios";
+import { api } from "@/lib/api/client";
+
+import type { AxiosRequestConfig } from "axios";
 
 /**
  * Base Service Class
@@ -9,10 +10,7 @@ export class BaseService {
   /**
    * GET request
    */
-  protected async get<T>(
-    url: string,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
+  protected async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     return api.get<T>(url, config);
   }
 

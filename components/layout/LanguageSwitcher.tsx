@@ -1,16 +1,16 @@
 "use client";
 
-import {Button} from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
-import {useTranslation} from "@/lib/contexts/TranslationContext";
+import { useTranslation } from "@/lib/contexts/TranslationContext";
 
 export function LanguageSwitcher() {
-  const {locale, setLocale, t} = useTranslation();
+  const { locale, setLocale, t } = useTranslation();
 
   const flagEmoji = locale === "en" ? "🇬🇧" : "🇯🇵";
 

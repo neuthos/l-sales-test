@@ -92,7 +92,8 @@ export const en = {
 
   // 404 Page
   "Page Not Found": "Page Not Found",
-  "The page you are looking for does not exist.": "The page you are looking for does not exist.",
+  "The page you are looking for does not exist.":
+    "The page you are looking for does not exist.",
   "Go to Dashboard": "Go to Dashboard",
 
   // Auth
@@ -102,7 +103,8 @@ export const en = {
   Password: "Password",
   Unauthorized: "Unauthorized",
   Forbidden: "Forbidden",
-  "You do not have permission to access this page.": "You do not have permission to access this page.",
+  "You do not have permission to access this page.":
+    "You do not have permission to access this page.",
   "Please login to continue.": "Please login to continue.",
   "Access Denied": "Access Denied",
   "Authentication Required": "Authentication Required",

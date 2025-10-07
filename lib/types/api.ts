@@ -21,7 +21,11 @@ export type ApiResponse<T = unknown> = ApiSuccessResponse<T> | ApiErrorResponse;
  * Custom API Error class
  */
 export class ApiError extends Error {
-  constructor(public code: string, public msg: string, public status?: number) {
+  constructor(
+    public code: string,
+    public msg: string,
+    public status?: number
+  ) {
     super(msg);
     this.name = "ApiError";
   }

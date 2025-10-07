@@ -1,13 +1,14 @@
 import {
-  Gauge,
-  Target,
-  Handshake,
-  FileText,
-  DollarSign,
   Database,
+  DollarSign,
+  FileText,
+  Gauge,
+  Handshake,
   Settings,
+  Target,
 } from "lucide-react";
-import {MenuConfig} from "@/lib/types/menu";
+
+import type { MenuConfig } from "@/lib/types/menu";
 
 export const menuConfig: MenuConfig = {
   items: [

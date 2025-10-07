@@ -1,8 +1,19 @@
 "use client";
 
-import {createContext, useContext, useState, useEffect, ReactNode} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import {AuthState, Permissions, PermissionLevel} from "@/lib/types/permission";
+
+import type { ReactNode } from "react";
+import type {
+  AuthState,
+  PermissionLevel,
+  Permissions,
+} from "@/lib/types/permission";
+
+interface AuthCookieData {
+  isAuthenticated: boolean;
+  permissions: Permissions;
+}
 
 interface AuthContextType extends AuthState {
   login: () => boolean;
@@ -36,7 +47,7 @@ const getDefaultPermissions = (): Permissions => ({
   "/dashboard/protected": "none", // Special case: no access even when logged in
 });
 
-export function AuthProvider({children}: {children: ReactNode}) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [permissions, setPermissions] = useState<Permissions>({});
 
@@ -45,9 +56,9 @@ export function AuthProvider({children}: {children: ReactNode}) {
     const savedAuth = Cookies.get("l-sales-auth");
     if (savedAuth) {
       try {
-        const authData = JSON.parse(savedAuth);
-        setIsAuthenticated(authData.isAuthenticated || false);
-        setPermissions(authData.permissions || {});
+        const authData = JSON.parse(savedAuth) as AuthCookieData;
+        setIsAuthenticated(authData.isAuthenticated ?? false);
+        setPermissions(authData.permissions ?? {});
       } catch {
         // Invalid data, clear it
         Cookies.remove("l-sales-auth");
@@ -60,8 +71,8 @@ export function AuthProvider({children}: {children: ReactNode}) {
     if (isAuthenticated) {
       Cookies.set(
         "l-sales-auth",
-        JSON.stringify({isAuthenticated, permissions}),
-        {expires: 7} // 7 days
+        JSON.stringify({ isAuthenticated, permissions }),
+        { expires: 7 } // 7 days
       );
     } else {
       Cookies.remove("l-sales-auth");
@@ -96,7 +107,7 @@ export function AuthProvider({children}: {children: ReactNode}) {
 
   const checkPermission = (route: string): PermissionLevel => {
     if (!isAuthenticated) return "none";
-    return permissions[route] || "none";
+    return permissions[route] ?? "none";
   };
 
   return (

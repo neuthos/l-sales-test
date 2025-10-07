@@ -1,14 +1,18 @@
-import axios, {
+import axios from "axios";
+import Cookies from "js-cookie";
+
+import { ApiError } from "@/lib/types/api";
+import { getUserTimezone } from "@/lib/utils/date";
+
+import type {
   AxiosError,
   AxiosInstance,
   InternalAxiosRequestConfig,
 } from "axios";
-import Cookies from "js-cookie";
-import {ApiError, ApiErrorResponse, ApiResponse} from "@/lib/types/api";
-import {getUserTimezone} from "@/lib/utils/date";
+import type { ApiErrorResponse, ApiResponse } from "@/lib/types/api";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1/";
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1/";
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -42,7 +46,7 @@ apiClient.interceptors.request.use(
     // Add company key header (you can get this from tenant context)
     // config.headers["X-Company-Key"] = getTenantId();
 
-    if (["post", "put", "patch"].includes(config.method || "")) {
+    if (["post", "put", "patch"].includes(config.method ?? "")) {
       config.headers["X-Idempotency-Key"] = crypto.randomUUID();
     }
 
@@ -66,7 +70,7 @@ apiClient.interceptors.response.use(
     // Handle different error scenarios
     if (error.response) {
       // Server responded with error
-      const {status, data} = error.response;
+      const { status, data } = error.response;
 
       // Check if response follows our API error format
       if (data && !data.success && data.message) {
@@ -77,7 +81,7 @@ apiClient.interceptors.response.use(
       // Fallback for non-standard errors
       throw new ApiError(
         "UNKNOWN_ERROR",
-        error.message || "An unknown error occurred",
+        error.message ?? "An unknown error occurred",
         status
       );
     } else if (error.request) {
@@ -91,7 +95,7 @@ apiClient.interceptors.response.use(
       // Something else happened
       throw new ApiError(
         "REQUEST_ERROR",
-        error.message || "An error occurred while setting up the request",
+        error.message ?? "An error occurred while setting up the request",
         0
       );
     }
