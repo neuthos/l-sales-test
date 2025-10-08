@@ -421,15 +421,27 @@ git push origin develop
 **Trigger:** PR merged to `staging` branch
 
 **What it does:**
-- Creates date-based release branch: `release/YYYY-MM-DD`
-- Automatically creates PR from `staging` → `release/YYYY-MM-DD`
-- Includes version bump instructions in PR body
+1. **Checks for active release** - Verifies no other release branch is in progress
+2. **Creates date-based release branch** - `release/YYYY-MM-DD` (if no active release)
+3. **Creates PR** - `staging` → `release/YYYY-MM-DD`
+4. **Skips if active release exists** - Prevents multiple concurrent releases
+
+**Single Active Release Policy:**
+- ⚠️ Only **one release branch** can be active at a time
+- Active release = PR from `release/*` → `master` that is still open
+- If active release exists, workflow will skip and comment on staging PR
 
 **Example:**
 ```bash
+# Scenario 1: No active release
 # After merging staging PR on 2025-10-08:
 # ✅ Creates branch: release/2025-10-08
 # ✅ Creates PR: staging → release/2025-10-08
+
+# Scenario 2: Active release exists (release/2025-10-07 → master still open)
+# After merging staging PR:
+# ⏭️ Skips creation
+# 💬 Comments: "Active release/2025-10-07 detected. Complete it first."
 ```
 
 #### 3. **Version Bump & Production Release** (`version-bump-production.yml`)
@@ -496,8 +508,12 @@ git push origin develop
 
 # 3️⃣ Team reviews and merges to staging
 
-# → GitHub Action: Creates branch release/2025-10-08 ✅
-# → GitHub Action: Creates PR staging → release/2025-10-08 ✅
+# → GitHub Action: Checks for active release branches
+# → If no active release:
+#    ✅ Creates branch release/2025-10-08
+#    ✅ Creates PR staging → release/2025-10-08
+# → If active release exists:
+#    ⏭️ Skips (comments on PR about active release)
 
 # 4️⃣ QA tests on release branch
 
@@ -606,21 +622,31 @@ Protect these branches:
 - Check Node.js version (must be 20+)
 - Verify all dependencies installed correctly
 
+**Workflow skipped creating release branch?**
+- Check for active release: `gh pr list --base master --head "release/*" --state open`
+- Complete the current release PR to master first
+- After merging to master, you can create a new release from staging
+
 ### Best Practices
 
-1. **Always use labels for version bumps**
+1. **Single active release policy**
+   - Only one release branch can be active at a time
+   - Complete current release (merge to master) before starting new one
+   - If workflow skips, check for open PR from `release/*` → `master`
+
+2. **Always use labels for version bumps**
    - Even though PATCH is default, be explicit
    - Helps team understand release impact
 
-2. **Test on staging before release**
+3. **Test on staging before release**
    - Never skip staging deployment
    - Use release branch for final QA
 
-3. **Write meaningful commit messages**
+4. **Write meaningful commit messages**
    - They appear in release changelog
    - Follow conventional commit format
 
-4. **Review automated PRs**
+5. **Review automated PRs**
    - Don't blindly merge auto-created PRs
    - Check changes and test thoroughly
 
