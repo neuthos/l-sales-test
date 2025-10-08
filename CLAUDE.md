@@ -19,10 +19,19 @@ npm run build
 npm start
 
 # Linting & Formatting
-npm run lint              # Check for lint errors
+npm run lint              # Check for lint errors (errors only, no warnings)
 npm run lint:fix          # Auto-fix all fixable lint errors + format code
 npm run format            # Format code with Prettier
 npm run format:check      # Check if code is formatted correctly
+
+# Testing
+npm run test              # Run tests once
+npm run test:watch        # Run tests in watch mode
+npm run test:coverage     # Run tests with coverage report
+npm run test:ci           # Run tests in CI mode (for GitHub Actions)
+
+# CI/CD Simulation
+npm run ci:local          # Simulate full CI pipeline locally (lint + test + build)
 ```
 
 ## Editor Setup (VSCode)
