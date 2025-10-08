@@ -4,7 +4,4 @@
 echo "🔍 Running linter..."
 npm run lint || exit 1
 
-echo "🧪 Running tests..."
-npm test || exit 1
-
 echo "✅ Pre-commit checks passed!"

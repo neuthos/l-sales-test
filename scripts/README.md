@@ -1,8 +1,33 @@
-# GitHub Labels Management Scripts
+# Scripts Documentation
 
-Scripts untuk mengelola GitHub labels di repository ini.
+Collection of utility scripts for development and CI/CD workflows.
 
 ## 📋 Available Scripts
+
+### CI/CD Scripts
+
+#### `ci-local.sh` - Simulate CI Pipeline Locally
+
+Run the same checks that GitHub Actions will run:
+
+```bash
+# Run all CI checks locally
+npm run ci:local
+
+# Or run directly
+./scripts/ci-local.sh
+```
+
+**What it does:**
+1. ✅ Runs linter (`npm run lint`)
+2. ✅ Runs unit tests with coverage (`npm run test:ci`)
+3. ✅ Builds project (`npm run build`)
+
+**Use this before pushing** to catch issues early!
+
+---
+
+### Label Management Scripts
 
 ### 1. `create-labels.sh` - Create Labels
 

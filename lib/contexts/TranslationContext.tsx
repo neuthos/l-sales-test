@@ -30,7 +30,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedLocale = localStorage.getItem("locale") as Locale;
-      if (savedLocale && (savedLocale === "en" ?? savedLocale === "ja")) {
+      if (savedLocale && (savedLocale === "en" || savedLocale === "ja")) {
         setLocaleState(savedLocale);
       }
     }
