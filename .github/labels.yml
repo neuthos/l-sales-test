@@ -1,0 +1,43 @@
+# GitHub Labels Configuration
+# Use with: gh label sync --file .github/labels.yml
+
+- name: PATCH
+  color: "10b981"
+  description: "🟢 Bug fixes, patch release (0.0.X)"
+
+- name: MINOR
+  color: "3b82f6"
+  description: "🔵 New features, minor release (0.X.0)"
+
+- name: MAJOR
+  color: "ef4444"
+  description: "🔴 Breaking changes, major release (X.0.0)"
+
+# Additional useful labels
+- name: "bug"
+  color: "d73a4a"
+  description: "Something isn't working"
+
+- name: "enhancement"
+  color: "a2eeef"
+  description: "New feature or request"
+
+- name: "documentation"
+  color: "0075ca"
+  description: "Improvements or additions to documentation"
+
+- name: "dependencies"
+  color: "0366d6"
+  description: "Pull requests that update a dependency file"
+
+- name: "testing"
+  color: "1d76db"
+  description: "Related to testing"
+
+- name: "urgent"
+  color: "ff0000"
+  description: "Requires immediate attention"
+
+- name: "needs-review"
+  color: "fbca04"
+  description: "Waiting for code review"

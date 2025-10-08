@@ -19,7 +19,7 @@ export function useTenant(): TenantConfig {
 
   const tenant = useMemo(() => {
     // Always return default for SSR and initial client render
-    if (!mounted ?? typeof window === "undefined") {
+    if (mounted ?? typeof window === "undefined") {
       return {
         tenantId: "default",
         environment: "development",

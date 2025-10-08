@@ -233,6 +233,663 @@ git commit --no-verify -m "your message"
 echo "feat(api): add new endpoint" | npx commitlint
 ```
 
+## Git Branch Conventions
+
+This project enforces strict branch naming conventions to maintain a clean and organized Git workflow.
+
+### Branch Structure
+
+```
+develop (default)
+  ↓
+staging (UAT)
+  ↓
+release/vX.Y.Z
+  ↓
+master (production)
+```
+
+### Protected Branches
+
+These branches are permanent and should never be deleted:
+
+- **`develop`** - Default development branch where all features are merged
+- **`staging`** - UAT (User Acceptance Testing) environment
+- **`master`** or **`main`** - Production environment (stable, deployed code)
+
+> **Note**: GitHub uses `main` as the default branch name. Both `master` and `main` are valid for the production branch in this project.
+
+### Release Branches
+
+- **Format**: `release/vX.Y.Z`
+- **Created from**: `develop`
+- **Purpose**: Prepare a new production release
+
+**Examples:**
+```bash
+git checkout develop
+git checkout -b release/v1.0.0
+git checkout -b release/v2.3.1
+```
+
+### Feature Branches
+
+All development work should be done in feature branches following this naming pattern:
+
+#### 1. Features (`feat/`)
+- **Format**: `feat/<ticket-id>/<short-description>`
+- **Created from**: `develop`
+- **Purpose**: New features or enhancements
+
+**Examples:**
+```bash
+git checkout develop
+git checkout -b feat/ABC-123/user-authentication
+git checkout -b feat/XYZ-456/dashboard-widget
+git checkout -b feat/sales-report-export
+```
+
+#### 2. Bug Fixes (`fix/`)
+- **Format**: `fix/<ticket-id>/<short-description>`
+- **Created from**: `develop`
+- **Purpose**: Bug fixes for development or staging
+
+**Examples:**
+```bash
+git checkout develop
+git checkout -b fix/ABC-789/login-redirect-issue
+git checkout -b fix/XYZ-101/date-picker-bug
+```
+
+#### 3. Hotfixes (`hotfix/`)
+- **Format**: `hotfix/<ticket-id>/<short-description>`
+- **Created from**: `master` ⚠️ **MUST checkout from master, NOT develop**
+- **Purpose**: Critical production bug fixes
+
+**Examples:**
+```bash
+git checkout master
+git checkout -b hotfix/CRITICAL-001/security-vulnerability
+git checkout -b hotfix/URGENT-042/payment-gateway-fix
+```
+
+### Branch Naming Rules
+
+✅ **Valid patterns:**
+- `feat/ABC-123/add-user-management`
+- `fix/BUG-456/fix-login-timeout`
+- `hotfix/CRITICAL-789/patch-sql-injection`
+- `release/v1.2.0`
+
+❌ **Invalid patterns:**
+- `feature/new-thing` (use `feat/` not `feature/`)
+- `Fix/BUG-123/test` (must be lowercase)
+- `feat/Add_User_Feature` (use hyphens, not underscores or spaces)
+- `hotfix/fix-something` (hotfix must checkout from master)
+
+### Branch Validation
+
+Branch names are **automatically validated on commit** via Husky hook. Invalid branch names will be rejected with a clear error message showing:
+- What's wrong with the branch name
+- Valid naming patterns
+- Examples of correct branch names
+
+### Workflow Examples
+
+**Creating a new feature:**
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feat/ABC-123/add-sales-dashboard
+# Make changes, commit
+git push -u origin feat/ABC-123/add-sales-dashboard
+# Create PR to develop
+```
+
+**Creating a hotfix:**
+```bash
+git checkout master
+git pull origin master
+git checkout -b hotfix/CRITICAL-001/fix-payment-bug
+# Make changes, commit
+git push -u origin hotfix/CRITICAL-001/fix-payment-bug
+# Create PR to master (and backport to develop)
+```
+
+**Creating a release:**
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b release/v1.5.0
+# Bump version, update changelog
+git push -u origin release/v1.5.0
+# Create PR to staging → master
+```
+
+### Best Practices
+
+1. **Always create branches from the correct base:**
+   - Features/fixes → from `develop`
+   - Hotfixes → from `master`
+   - Releases → from `develop`
+
+2. **Use descriptive branch names:**
+   - Include ticket/issue ID if available
+   - Keep description short but meaningful
+   - Use hyphens, not underscores or spaces
+
+3. **Delete feature branches after merge:**
+   - Keep repository clean
+   - Merged branches can always be restored from Git history
+
+4. **Never commit directly to protected branches:**
+   - Always use Pull Requests
+   - Require code review before merging
+
+## GitHub Workflows & Release Process
+
+This project uses **GitHub Actions** for automated CI/CD, PR creation, and semantic versioning.
+
+### Automated Workflows
+
+#### 1. **Auto PR to Staging** (`auto-pr-staging.yml`)
+
+**Trigger:** Push to `develop` branch
+
+**What it does:**
+- Automatically creates PR from `develop` → `staging`
+- Skips if PR already exists
+- Adds deployment instructions in PR body
+
+**Usage:**
+```bash
+git push origin develop
+# ✅ GitHub Action creates PR: develop → staging
+```
+
+#### 2. **Auto PR to Release** (`auto-pr-release.yml`)
+
+**Trigger:** PR merged to `staging` branch
+
+**What it does:**
+- Creates date-based release branch: `release/YYYY-MM-DD`
+- Automatically creates PR from `staging` → `release/YYYY-MM-DD`
+- Includes version bump instructions in PR body
+
+**Example:**
+```bash
+# After merging staging PR on 2025-10-08:
+# ✅ Creates branch: release/2025-10-08
+# ✅ Creates PR: staging → release/2025-10-08
+```
+
+#### 3. **Version Bump & Production Release** (`version-bump-production.yml`)
+
+**Trigger:** PR merged to `master` or `main` branch
+
+**What it does:**
+1. Checks for version label (`PATCH`/`MINOR`/`MAJOR`)
+2. Bumps version in `package.json` (default: `PATCH`)
+3. Commits version change
+4. Creates Git tag: `vX.Y.Z`
+5. Creates GitHub Release with changelog
+
+**Version Bump Logic:**
+- **PATCH** (default): `0.1.0` → `0.1.1` (bug fixes)
+- **MINOR**: `0.1.0` → `0.2.0` (new features)
+- **MAJOR**: `0.1.0` → `1.0.0` (breaking changes)
+
+**Usage:**
+```bash
+# 1. Create PR: release/2025-10-08 → master
+# 2. Add label to PR:
+#    - No label = PATCH (default)
+#    - Add "MINOR" label for new features
+#    - Add "MAJOR" label for breaking changes
+# 3. Merge PR
+# ✅ Version bumped, tag created, release published
+```
+
+#### 4. **CI/CD Pipeline** (`ci.yml`)
+
+**Trigger:** Pull request to specific branches:
+- PR to `develop` (feature/fix branches → develop)
+- PR to `master`/`main` (release/* branches → production)
+
+**What it does:**
+1. **Runs linter** - `npm run lint`
+2. **Runs unit tests** - `npm run test:ci` (with coverage)
+3. **Builds project** - `npm run build`
+4. **Uploads artifacts** - Build files & coverage reports
+5. **Comments PR** - Success/failure status with source & target branches
+
+**Quality Gates:**
+- All checks must pass before merge
+- Failed checks block PR merge
+- Detailed error messages in PR comments
+
+### Complete Deployment Flow
+
+**End-to-End Example:**
+
+```bash
+# 1️⃣ Developer creates feature PR
+git push origin feat/ABC-123/user-dashboard
+# Create PR: feat/ABC-123/user-dashboard → develop
+
+# → CI checks run: lint, test, build ✅
+# → PR reviewed and merged to develop
+
+# 2️⃣ Push to develop triggers staging PR
+git push origin develop
+
+# → GitHub Action: Creates PR develop → staging ✅
+
+# 3️⃣ Team reviews and merges to staging
+
+# → GitHub Action: Creates branch release/2025-10-08 ✅
+# → GitHub Action: Creates PR staging → release/2025-10-08 ✅
+
+# 4️⃣ QA tests on release branch
+
+# 5️⃣ Create PR: release/2025-10-08 → master
+
+# → CI checks run again: lint, test, build ✅ (production validation)
+
+# 6️⃣ Add version label to PR:
+#    - "PATCH" for bug fixes (0.1.0 → 0.1.1)
+#    - "MINOR" for features (0.1.0 → 0.2.0)
+#    - "MAJOR" for breaking (0.1.0 → 1.0.0)
+
+# 7️⃣ Merge PR to master
+
+# → GitHub Action: Bumps version to 0.2.0 ✅
+# → GitHub Action: Creates tag v0.2.0 ✅
+# → GitHub Action: Creates GitHub Release ✅
+
+# 8️⃣ Deploy to production 🚀
+```
+
+### Version Scripts
+
+Manual version bumping (optional):
+
+```bash
+# Bump patch version (0.1.0 → 0.1.1)
+npm run version:patch
+
+# Bump minor version (0.1.0 → 0.2.0)
+npm run version:minor
+
+# Bump major version (0.1.0 → 1.0.0)
+npm run version:major
+```
+
+### GitHub Repository Setup
+
+#### Required Configuration
+
+**1. Create Labels** (Settings → Labels):
+
+**Option A - Using Script (Recommended):**
+```bash
+# Run the automated script
+./scripts/create-labels.sh
+```
+
+**Option B - Manual creation:**
+```bash
+# Create version bump labels one by one
+gh label create "PATCH" --color "10b981" --description "🟢 Bug fixes, patch release (0.0.X)"
+gh label create "MINOR" --color "3b82f6" --description "🔵 New features, minor release (0.X.0)"
+gh label create "MAJOR" --color "ef4444" --description "🔴 Breaking changes, major release (X.0.0)"
+```
+
+**Option C - Via GitHub UI:**
+- Settings → Labels → New label
+- `PATCH` - #10b981 (green) - Bug fixes
+- `MINOR` - #3b82f6 (blue) - New features
+- `MAJOR` - #ef4444 (red) - Breaking changes
+
+**2. Branch Protection Rules** (Settings → Branches):
+
+Protect these branches:
+- `develop` - Require PR reviews, require status checks
+- `staging` - Require PR reviews, require status checks
+- `master` / `main` - Require PR reviews, require status checks
+
+**3. GitHub Actions Permissions** (Settings → Actions → General):
+
+- Workflow permissions: **Read and write permissions**
+- ✅ Allow GitHub Actions to create and approve pull requests
+
+#### Optional Enhancements
+
+**Auto-merge staging PRs:**
+```yaml
+# Add to auto-pr-staging.yml
+- name: Enable auto-merge
+  run: gh pr merge --auto --squash
+```
+
+**Slack/Discord notifications:**
+```yaml
+- name: Notify on release
+  uses: slackapi/slack-github-action@v1
+  with:
+    webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+```
+
+### Troubleshooting
+
+**PR not created automatically?**
+- Check GitHub Actions permissions (must allow PR creation)
+- Verify workflows are enabled in repository settings
+- Check workflow logs for errors
+
+**Version bump not working?**
+- Ensure PR has correct label (PATCH/MINOR/MAJOR)
+- Check if PR was actually merged (not just closed)
+- Verify GITHUB_TOKEN has write permissions
+
+**Build fails in CI?**
+- Run `npm run lint` and `npm run test` locally first
+- Check Node.js version (must be 20+)
+- Verify all dependencies installed correctly
+
+### Best Practices
+
+1. **Always use labels for version bumps**
+   - Even though PATCH is default, be explicit
+   - Helps team understand release impact
+
+2. **Test on staging before release**
+   - Never skip staging deployment
+   - Use release branch for final QA
+
+3. **Write meaningful commit messages**
+   - They appear in release changelog
+   - Follow conventional commit format
+
+4. **Review automated PRs**
+   - Don't blindly merge auto-created PRs
+   - Check changes and test thoroughly
+
+## Testing
+
+This project uses **Jest** and **React Testing Library** for unit and component testing with comprehensive coverage reporting.
+
+### Test Commands
+
+```bash
+# Run all tests once
+npm test
+
+# Run tests in watch mode (auto-rerun on file changes)
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Run tests in CI mode (optimized for CI/CD pipelines)
+npm run test:ci
+```
+
+### Coverage Thresholds
+
+Coverage thresholds are currently **disabled** to allow gradual test adoption. Once you have sufficient test coverage, uncomment and adjust the thresholds in `jest.config.ts`:
+
+```typescript
+coverageThreshold: {
+  global: {
+    branches: 70,
+    functions: 70,
+    lines: 70,
+    statements: 70,
+  },
+}
+```
+
+Start with lower thresholds (e.g., 30%) and gradually increase as you add more tests.
+
+### Test File Structure
+
+Tests should be placed in `__tests__` directories next to the code they test:
+
+```
+lib/
+├── utils.ts
+└── __tests__/
+    └── utils.test.ts
+
+components/
+├── ui/
+│   ├── Button.tsx
+│   └── __tests__/
+│       └── Button.test.tsx
+
+lib/contexts/
+├── TranslationContext.tsx
+└── __tests__/
+    └── TranslationContext.test.tsx
+```
+
+### Naming Conventions
+
+- **Test files**: `*.test.ts` or `*.test.tsx`
+- **Spec files**: `*.spec.ts` or `*.spec.tsx` (both formats supported)
+- **Test directories**: `__tests__/`
+
+### Writing Tests
+
+#### 1. Testing Utility Functions
+
+```typescript
+import { cn } from "@/lib/utils";
+
+describe("cn utility function", () => {
+  it("should merge class names correctly", () => {
+    const result = cn("bg-red-500", "text-white");
+    expect(result).toBe("bg-red-500 text-white");
+  });
+
+  it("should handle conditional classes", () => {
+    const isActive = true;
+    const result = cn("base-class", isActive && "active-class");
+    expect(result).toBe("base-class active-class");
+  });
+});
+```
+
+#### 2. Testing Components
+
+```typescript
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
+import { Button } from "@/components/ui/Button";
+
+describe("Button Component", () => {
+  it("should render button with text", () => {
+    render(<Button data-test="test-button">Click me</Button>);
+    const button = screen.getByText("Click me");
+    expect(button).toBeInTheDocument();
+  });
+
+  it("should handle click events", async () => {
+    const handleClick = jest.fn();
+    const user = userEvent.setup();
+
+    render(
+      <Button data-test="test-button" onClick={handleClick}>
+        Click me
+      </Button>
+    );
+
+    const button = screen.getByText("Click me");
+    await user.click(button);
+
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+});
+```
+
+#### 3. Testing Hooks with Context
+
+```typescript
+import { act, renderHook } from "@testing-library/react";
+
+import type { ReactNode } from "react";
+
+import { TranslationProvider, useTranslation } from "../TranslationContext";
+
+describe("useTranslation Hook", () => {
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <TranslationProvider>{children}</TranslationProvider>
+  );
+
+  it("should return default locale as 'en'", () => {
+    const { result } = renderHook(() => useTranslation(), { wrapper });
+    expect(result.current.locale).toBe("en");
+  });
+
+  it("should change locale to Japanese", () => {
+    const { result } = renderHook(() => useTranslation(), { wrapper });
+
+    act(() => {
+      result.current.setLocale("ja");
+    });
+
+    expect(result.current.locale).toBe("ja");
+  });
+});
+```
+
+### Testing Best Practices
+
+1. **Use Testing Library Queries** (in order of preference):
+   - `getByRole` - Most accessible
+   - `getByLabelText` - Good for forms
+   - `getByText` - For user-visible text
+   - `getByTestId` - Last resort (use `data-test` attribute)
+
+2. **Test User Behavior, Not Implementation**:
+   ```typescript
+   // ✅ Good - Tests user interaction
+   await user.click(screen.getByRole("button", { name: /submit/i }));
+   expect(onSubmit).toHaveBeenCalled();
+
+   // ❌ Bad - Tests internal state
+   expect(component.state.isSubmitting).toBe(true);
+   ```
+
+3. **Use `userEvent` Instead of `fireEvent`**:
+   ```typescript
+   // ✅ Good - Simulates real user interaction
+   const user = userEvent.setup();
+   await user.click(button);
+
+   // ❌ Bad - Low-level DOM events
+   fireEvent.click(button);
+   ```
+
+4. **Mock External Dependencies**:
+   ```typescript
+   // Mock localStorage
+   const localStorageMock = {
+     getItem: jest.fn(),
+     setItem: jest.fn(),
+     clear: jest.fn(),
+   };
+   Object.defineProperty(window, "localStorage", {
+     value: localStorageMock,
+   });
+   ```
+
+5. **Organize Tests with `describe` Blocks**:
+   ```typescript
+   describe("Component Name", () => {
+     describe("when user is authenticated", () => {
+       it("should show dashboard", () => {
+         // test
+       });
+     });
+
+     describe("when user is not authenticated", () => {
+       it("should redirect to login", () => {
+         // test
+       });
+     });
+   });
+   ```
+
+### Coverage Reports
+
+After running `npm run test:coverage`, view the coverage report:
+
+```bash
+# Open HTML coverage report in browser
+open coverage/lcov-report/index.html
+```
+
+Coverage reports show:
+- **Green**: Well-tested code (>80% coverage)
+- **Yellow**: Moderate coverage (50-80%)
+- **Red**: Poorly tested code (<50%)
+
+### Continuous Integration
+
+The `test:ci` script is optimized for CI/CD pipelines:
+
+```bash
+npm run test:ci
+```
+
+Features:
+- Runs in CI mode (no watch, single run)
+- Generates coverage report
+- Limits workers to 2 for CI environments
+- Fails if coverage thresholds are not met
+
+### Example Test Files
+
+The project includes example tests for:
+
+1. **`lib/__tests__/utils.test.ts`** - Utility function testing
+2. **`components/ui/__tests__/Skeleton.test.tsx`** - Simple component testing
+3. **`components/ui/__tests__/Button.test.tsx`** - Component with variants and events
+4. **`lib/contexts/__tests__/TranslationContext.test.tsx`** - Hook with context provider
+
+Study these examples to understand the testing patterns used in this project.
+
+### Pre-Commit Testing
+
+Tests automatically run before each commit via Husky pre-commit hook. The pre-commit hook:
+
+1. **Runs linter** - Checks for code quality issues
+2. **Runs tests** - Ensures all tests pass
+3. **Blocks commit** - If either linter or tests fail
+
+To bypass pre-commit hooks (emergency only):
+```bash
+git commit --no-verify -m "your message"
+```
+
+**Pre-commit workflow:**
+```bash
+git add .
+git commit -m "feat: add new feature"
+
+# Output:
+# 🔍 Running linter...
+# ✓ All files pass linting
+#
+# 🧪 Running tests...
+# ✓ 29 tests passed
+#
+# ✅ Pre-commit checks passed!
+```
+
 ## Linting Guidelines
 
 This project enforces **strict TypeScript linting** to catch bugs before runtime.

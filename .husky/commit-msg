@@ -1,6 +1,55 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# Get current branch name
+branch_name=$(git symbolic-ref --short HEAD 2>/dev/null)
+
+# Validate branch name
+if [ -n "$branch_name" ]; then
+  # Protected branches (always valid)
+  if echo "$branch_name" | grep -qE '^(develop|staging|master|main)$'; then
+    : # Valid protected branch
+  # Release branches: release/vX.Y.Z
+  elif echo "$branch_name" | grep -qE '^release/v[0-9]+\.[0-9]+\.[0-9]+$'; then
+    : # Valid release branch
+  # Feature branches: feat/<ticket/desc>, fix/<ticket/desc>, hotfix/<ticket/desc>
+  elif echo "$branch_name" | grep -qE '^(feat|fix|hotfix)/[a-z0-9\-]+$'; then
+    : # Valid feature branch
+  else
+    echo ""
+    echo "❌ Invalid branch name: $branch_name"
+    echo ""
+    echo "📋 Branch naming conventions:"
+    echo ""
+    echo "   Protected branches:"
+    echo "   • develop        - Default development branch"
+    echo "   • staging        - UAT environment"
+    echo "   • master/main    - Production environment"
+    echo ""
+    echo "   Release branches:"
+    echo "   • release/vX.Y.Z - Release version (e.g., release/v1.2.0)"
+    echo ""
+    echo "   Feature branches:"
+    echo "   • feat/<ticket/desc>    - New features (e.g., feat/ABC-123/user-auth)"
+    echo "   • fix/<ticket/desc>     - Bug fixes (e.g., fix/ABC-456/login-bug)"
+    echo "   • hotfix/<ticket/desc>  - Production hotfixes (e.g., hotfix/ABC-789/security-patch)"
+    echo ""
+    echo "📌 Rules:"
+    echo "   • Use lowercase and hyphens only"
+    echo "   • Feature branches → checkout from develop"
+    echo "   • Hotfix branches → checkout from master"
+    echo "   • Release branches → checkout from develop"
+    echo ""
+    echo "✅ Valid examples:"
+    echo "   git checkout -b feat/ABC-123/add-user-dashboard"
+    echo "   git checkout -b fix/XYZ-456/fix-login-redirect"
+    echo "   git checkout master && git checkout -b hotfix/CRITICAL-789/patch-security-vulnerability"
+    echo "   git checkout develop && git checkout -b release/v1.5.0"
+    echo ""
+    exit 1
+  fi
+fi
+
 # Run commitlint to validate commit message
 npx --no -- commitlint --edit "$1" || {
   echo ""

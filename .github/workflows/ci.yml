@@ -1,0 +1,103 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    branches:
+      - develop        # PR to develop
+      - master         # PR to master (from release/*)
+      - main           # PR to main (from release/*)
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm run test:ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: build-${{ github.event.pull_request.number }}
+          path: .next/
+          retention-days: 7
+
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: coverage-${{ github.event.pull_request.number }}
+          path: coverage/
+          retention-days: 7
+
+      - name: Comment PR with success
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const targetBranch = context.payload.pull_request.base.ref;
+            const sourceBranch = context.payload.pull_request.head.ref;
+
+            let message = '✅ **CI Pipeline Passed!**\n\n';
+            message += `**Target:** \`${targetBranch}\`\n`;
+            message += `**Source:** \`${sourceBranch}\`\n\n`;
+            message += '**Checks:**\n';
+            message += '- ✅ Linter passed\n';
+            message += '- ✅ Unit tests passed\n';
+            message += '- ✅ Build successful\n\n';
+            message += '*Build artifacts and coverage reports uploaded.*';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            })
+
+      - name: Comment PR on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const targetBranch = context.payload.pull_request.base.ref;
+            const sourceBranch = context.payload.pull_request.head.ref;
+
+            let message = '❌ **CI Pipeline Failed**\n\n';
+            message += `**Target:** \`${targetBranch}\`\n`;
+            message += `**Source:** \`${sourceBranch}\`\n\n`;
+            message += '**Failed Checks:**\n';
+            message += 'Please check the workflow logs for details.\n\n';
+            message += '**Common fixes:**\n';
+            message += '1. Run `npm run lint` locally\n';
+            message += '2. Run `npm run test` locally\n';
+            message += '3. Run `npm run build` locally\n';
+            message += '4. Fix any errors and push again';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            })
