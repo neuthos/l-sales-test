@@ -38,7 +38,7 @@ import type { TranslationKey } from "@/lib/translations";
 import type { MenuItem } from "@/lib/types/menu";
 
 function shouldShowMenuItem(item: MenuItem, environment: string): boolean {
-  if (!item.environments ?? item.environments === "all") {
+  if (item.environments === "all") {
     return true;
   }
 

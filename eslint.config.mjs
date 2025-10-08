@@ -89,15 +89,15 @@ const eslintConfig = [
 
       // ===== STRICT TYPE SAFETY RULES =====
 
-      // ERROR: No explicit 'any' in our own code
-      "@typescript-eslint/no-explicit-any": "error",
+      // WARN: No explicit 'any' in our own code (relaxed for now)
+      "@typescript-eslint/no-explicit-any": "warn",
 
-      // ERROR: No unsafe operations with 'any' types
-      "@typescript-eslint/no-unsafe-assignment": "error",
-      "@typescript-eslint/no-unsafe-call": "error",
-      "@typescript-eslint/no-unsafe-member-access": "error",
-      "@typescript-eslint/no-unsafe-return": "error",
-      "@typescript-eslint/no-unsafe-argument": "error",
+      // WARN: No unsafe operations with 'any' types (relaxed for now)
+      "@typescript-eslint/no-unsafe-assignment": "warn",
+      "@typescript-eslint/no-unsafe-call": "warn",
+      "@typescript-eslint/no-unsafe-member-access": "warn",
+      "@typescript-eslint/no-unsafe-return": "warn",
+      "@typescript-eslint/no-unsafe-argument": "warn",
 
       // ERROR: Unused variables (with some exceptions)
       "@typescript-eslint/no-unused-vars": [

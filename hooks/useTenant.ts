@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { usePathname } from "next/navigation";
 
 export interface TenantConfig {
   tenantId: string;
@@ -10,7 +9,6 @@ export interface TenantConfig {
 }
 
 export function useTenant(): TenantConfig {
-  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -19,7 +17,7 @@ export function useTenant(): TenantConfig {
 
   const tenant = useMemo(() => {
     // Always return default for SSR and initial client render
-    if (mounted ?? typeof window === "undefined") {
+    if (!mounted || typeof window === "undefined") {
       return {
         tenantId: "default",
         environment: "development",
@@ -52,7 +50,7 @@ export function useTenant(): TenantConfig {
       environment,
       subdomain: subdomain !== "localhost" ? subdomain : undefined,
     };
-  }, [pathname, mounted]);
+  }, [mounted]);
 
   return tenant;
 }
