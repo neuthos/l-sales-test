@@ -862,20 +862,17 @@ The project includes example tests for:
 
 Study these examples to understand the testing patterns used in this project.
 
-### Pre-Commit Testing
+### Git Hooks
 
-Tests automatically run before each commit via Husky pre-commit hook. The pre-commit hook:
+Automated quality checks via Husky:
 
-1. **Runs linter** - Checks for code quality issues
-2. **Runs tests** - Ensures all tests pass
-3. **Blocks commit** - If either linter or tests fail
+#### Pre-Commit Hook
 
-To bypass pre-commit hooks (emergency only):
-```bash
-git commit --no-verify -m "your message"
-```
+Runs **before each commit**:
 
-**Pre-commit workflow:**
+1. **Runs linter** - `npm run lint`
+2. **Blocks commit** - If linting fails
+
 ```bash
 git add .
 git commit -m "feat: add new feature"
@@ -883,12 +880,36 @@ git commit -m "feat: add new feature"
 # Output:
 # 🔍 Running linter...
 # ✓ All files pass linting
-#
-# 🧪 Running tests...
-# ✓ 29 tests passed
-#
 # ✅ Pre-commit checks passed!
 ```
+
+#### Pre-Push Hook
+
+Runs **before each push**:
+
+1. **Runs build** - `npm run build`
+2. **Blocks push** - If build fails
+
+```bash
+git push origin develop
+
+# Output:
+# 🏗️  Running build before push...
+# ✓ Compiled successfully
+# ✅ Pre-push checks passed!
+```
+
+#### Bypass Hooks (Emergency Only)
+
+```bash
+# Skip pre-commit (linting)
+git commit --no-verify -m "feat: emergency fix"
+
+# Skip pre-push (build)
+git push --no-verify origin develop
+```
+
+**⚠️ Use sparingly!** These checks prevent broken code from being committed/pushed.
 
 ## Linting Guidelines
 

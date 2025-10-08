@@ -26,7 +26,7 @@ export default function NotFound() {
           </p>
         </div>
 
-        <Button asChild className="mt-6">
+        <Button data-test="dashboard" asChild className="mt-6">
           <Link href="/dashboard">{t("Go to Dashboard")}</Link>
         </Button>
       </div>

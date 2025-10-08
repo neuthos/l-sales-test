@@ -7,7 +7,7 @@
     "dev": "husky install && next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint --quiet",
     "lint:fix": "eslint --fix && prettier --write .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

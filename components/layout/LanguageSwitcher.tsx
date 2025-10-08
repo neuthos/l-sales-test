@@ -17,7 +17,12 @@ export function LanguageSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" suppressHydrationWarning>
+        <Button
+          data-test="test"
+          variant="ghost"
+          size="icon"
+          suppressHydrationWarning
+        >
           <span className="text-lg">{flagEmoji}</span>
           <span className="sr-only">{t("Select Language")}</span>
         </Button>
