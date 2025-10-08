@@ -1,12 +1,12 @@
+"use client";
+
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SidebarInset, SidebarProvider } from "@/components/ui/Sidebar";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+import type { ReactNode } from "react";
+
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar variant="inset" />
